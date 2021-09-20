@@ -134,7 +134,7 @@ docker login {{ registry-host }}
 
 - Сценарий "Как ...?"
 ```shell
-docker image pull {{ os-registry }}/alpine
+docker image pull {{ os-registry }}/alpine:3.14
 docker system df
 ````
 
