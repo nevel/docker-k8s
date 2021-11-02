@@ -29,7 +29,7 @@ Agenda
 - 10:00 – 15:00
 - перерывы
 - вопросы
-- две части курса: обязательная базовая для всех ролей и расширенные темы больше в сторону эксплуатации
+- две части курса: обязательная базовая для всех ролей и расширенные темы (больше в сторону эксплуатации)
 
 Введение в Docker (15)
 -----------------
@@ -49,7 +49,10 @@ Agenda
 - disk image provisioning tool (dockercli) and Dockerfile
 - disk image
 - disk image registries: [docker hub](http://hub.docker.com) and corporate registries
-- container = running process + container data (container layer)
+
+Сontainer
+---------
+Сontainer = running process + container data (container layer)
 
 <details>
 <summary>puml</summary>
@@ -98,7 +101,7 @@ Hands-on practice quest #00: prerequisites sound-check (15+5)
 - [ ] Given 
 - сделан форк данного руководства для собственных пометок
 - форк открыт в браузере для внесения пометок 
-- для последующей удобной работы с copy+paste для ресурсов раздела [Prerequisites](#Prerequisites) плейсхолдеры заменены актуальными значениями
+- для последующей удобной работы с copy+paste для ресурсов раздела [Prerequisites](#Prerequisites) плейсхолдеры `{...}` заменены актуальными значениями
 - все команды Docker запускаются из-под `sudo ...` или в сессии `sudo su -`
 
 - [ ] Сформированы пары участников с чередованием ролей в паре 
@@ -121,12 +124,9 @@ Hands-on practice quest #00: prerequisites sound-check (15+5)
 docker version # TODO: собственные пометки участников для будущего использования в проектах
 docker system info
 docker system df
-
-docker events
 ```
 
 - Сценарий "Как ...?"
-(в новом ssh shell, чтобы параллельно видеть вывод `docker events`)
 ```shell
 docker logout
 docker login {{ registry-host }}
@@ -141,7 +141,7 @@ docker system df
 - Сценарий "Как ...?"
 ```shell
 docker container ls [--all]
-docker container run --name demo -it {{ os-registry }}/alpine
+docker container run --name demo -it {{ os-registry }}/alpine:3.14
 /# cat /etc/os-release
 /# exit 
 ```
@@ -268,21 +268,21 @@ docker image ls # TODO: собственные пометки участнико
 
 - Сценарий "Как ...?"
 ```shell
-docker image pull {{ os-registry }}/alpine
+docker image pull {{ os-registry }}/alpine:3.14
 docker image ls
 ```
 
 - Сценарий "Как ...?"
 ```shell
-docker image history {{ os-registry }}/alpine
+docker image history {{ os-registry }}/alpine:3.14
 
-docker image inspect {{ os-registry }}/alpine
-docker image inspect --format='{{.Id}} -> {{.Parent}}' {{ os-registry }}/alpine
+docker image inspect {{ os-registry }}/alpine:3.14
+docker image inspect --format='{{.Id}} -> {{.Parent}}' {{ os-registry }}/alpine:3.14
 ```
 
 - Сценарий "Как ...?"
 ```shell
-docker container run --name demo -it {{ os-registry }}/alpine
+docker container run --name demo -it {{ os-registry }}/alpine:3.14
 /# touch side-effect.txt
 /# exit
 docker container diff demo
@@ -339,7 +339,8 @@ docker image prune --all
 - entry point (image `entrypoint` override)
 - guest environment variables 
 - command line arguments (image `cmd` override)
-- [Экстернализация](https://docs.docker.com/engine/reference/run/#env-environment-variables) конфигурации приложения при запуске контейнера
+
+- [ ] [Экстернализация](https://docs.docker.com/engine/reference/run/#env-environment-variables) конфигурации приложения при запуске контейнера
 
 - [ ] [Жизненный цикл контейнера](docker/img/container-lifecycle.png)
 - `docker container create` + `docker container start` = `docker container run` `[args]`
@@ -375,7 +376,7 @@ docker container ls --format '{{.ID}} | {{.Names}} | {{.Status}} | {{.Image}}'
 
 - Сценарий "Как запустить 'одноразовый' контейнер?"
 ```shell
-docker container run --rm -it {{ os-registry }}/alpine # note `--rm`
+docker container run --rm -it {{ os-registry }}/alpine:3.14 # note `--rm`
 /# exit
 docker container ls
 ```
@@ -501,7 +502,7 @@ Successfully built 99cc1ad10469
 docker container run [--entrypoint Dockerfile's ENTRYPOINT override] IMAGE [Dockerfile's CMD defaults override] 
 ```
 ```shell
-FROM alpine
+FROM alpine:3.14
 ENTRYPOINT ["echo", "Hello"]
 CMD ["World"] # 'default parameters to ENTRYPOINT' form
 ...
@@ -523,8 +524,8 @@ Hello Alpine
 
 - [ ] Версионирование создаваемого образа через теги
 - опасность `:latest`
-- semantic versioning
-- unique tags
+- [semantic versioning](http://semver.org)
+- unique tags (UUID-like)
 
 Hands-on practice quest #03-1: preparing base image with JRE (15)
 ---------------------------
@@ -548,15 +549,14 @@ application
 │   └── wiremock-standalone-2.27.2.jar
 └── docker-compose.yml
 ```
-- Создана рабочая папка проекта 
+- Рабочая папка проекта 
 ```shell
-mkdir application
+cd application
 ```
 
 - [ ] When участники именуют сценарии, формируют свои команды и проверяют их вывод и поведение
 - Сценарий "Как создать и опубликовать собственный образ на основе Dockerfile?"
 ```shell
-cd application
 cat backend/Dockerfile # check it for reference of new base/Dockerfile
 
 mkdir base
@@ -576,20 +576,17 @@ Hands-on practice quest #03-2: _simple_ application containerization (15+5)
 - [ ] When участники именуют сценарии, формируют свои команды и проверяют их вывод и поведение
 - Сценарий "Как задать "чужой" образ как базовый для своих следующих образов?"
 ```shell
-cd application
 nano backend/Dockerfile #TODO fix FROM for new base image
 ```  
 
 - Сценарий "Как описать provision образа в Dockerfile?"
 ```shell
-cd application/backend
-wget --user {{ account }} --ask-password {{ app-distr }} # или скачать из artifactory + scp to remote
+wget --user {{ account }} --ask-password {{ app-distr }} --directory-prefix=backend/ # или скачать из artifactory вручную + scp to remote
 cat Dockerfile # check out application's default configuration
 ```
 
 - Сценарий "Как собрать свой образ с приложением на базе Dockerfile?"
 ```shell
-cd application
 docker image build --tag {{ project-registry }}/{{ account }}/backend:1.0.0 ./backend
 ```
 
@@ -645,21 +642,17 @@ Hands-on practice quest #04: _multi-component_ application containerization (25+
 - [ ] When участники именуют сценарии, формируют свои команды и проверяют их вывод и поведение
 - Сценарий "Как ...?"
 ```shell
-cd application/backend
-wget --user --ask-password {{ app-distr }} # или скачать из artifactory + scp
-nano Dockerfile #TODO fix active Spring profile to `preprod` instead of `qa`
+wget --user --ask-password {{ app-distr }} --directory-prefix=backend/ # или скачать из artifactory + scp
+nano backend/Dockerfile #TODO fix active Spring profile to `preprod` instead of `qa`
 docker image build --tag {{ project-registry }}/{{ account }}/backend:1.0.0 ./backend
 
-cd application/stub
-wget --user ---ask-password  {{ app-stub }} # или скачать из artifactory + scp
-nano Dockerfile #TODO fix FROM for new custom base image
+wget --user ---ask-password  {{ app-stub }} --directory-prefix=stub/ # или скачать из artifactory + scp
+nano stub/Dockerfile #TODO fix FROM for new custom base image
 docker image build --tag {{ project-registry }}/{{ account }}/stub:1.0.0 ./stub
 ```
 
 - Сценарий "Как ...?"
 ```shell
-cd application
-
 docker container run \
  --detach \
  --name db \
@@ -687,6 +680,7 @@ docker container run \
  --env SPRING_DATASOURCE_PASSWORD=dbo \
  --env SPRING_INTEGRATION_LEGACYACCOUNTINGSYSTEM_BASEURL="http://$(hostname -i):8888/api" \
  {{ project-registry }}/{{ account }}/backend:1.0.0
+
 curl -H "X-API-VERSION:1" localhost:8080/dbo/actuator/health [| jq]
 curl -H "X-API-VERSION:1" localhost:8080/dbo/api/account [| jq]
 ```
@@ -722,11 +716,11 @@ docker container rm [--force]
 - [Shared folders](https://docs.docker.com/storage/bind-mounts/#start-a-container-with-a-bind-mount) как подмонтированные FS  
 ```shell
 cd application
+
 docker container run --volume "$(pwd)"/folder/file:/folder/file:ro # пути у folder абсолютные, начинаются с "/"
 ```
 - [Volumes](https://docs.docker.com/storage/volumes/) как блочные устройства
 ```shell
-cd application
 docker container run --volume my_volume:/folder/file:ro # имя volume не начинается с "/"
 ```
 - [ ] Жизненный цикл `docker volume`
@@ -822,7 +816,6 @@ docker container run \
 ```
 
 ```shell
-cd application
 nano proxy/nginx.conf #TODOs
 
 docker image build --tag {{ project-registry }}/{{ account }}/proxy:1.0.0 ./proxy
@@ -913,7 +906,7 @@ nano docker-compose.yml # ограничить по CPU, чтоб не бало�
 ```shell
 docker image build --tag stub ./stub
 [+] Building 2.2s (10/10) FINISHED                                                                                                                                                                                                                      
- => [internal] load build definition from Dockerfile                                                                                                                                                                                               0.0s
+ => [internal] load build definition from Dockerfile                                                                                                                                                                                             0.0s
  => => transferring dockerfile: 328B                                                                                                                                                                                                               0.0s
  => [internal] load .dockerignore                                                                                                                                                                                                                  0.0s
  => => transferring context: 34B                                                                                                                                                                                                                   0.0s
@@ -1010,7 +1003,7 @@ docker builder prune [--all]
 
 - [ ] ["Docker-из-docker"](https://stackoverflow.com/a/33003273)?
 - [ ] [Автотесты для Dockerfile](https://medium.com/@renatomefi/unit-testing-writing-dockerfiles-like-a-software-developer-1759f416ce84)
-- [ ] Паттерн [Builder](https://blog.alexellis.io/mutli-stage-docker-builds/) vs ["multi-stage build"](https://docs.docker.com/develop/develop-images/multistage-build/) для конвейера разработки и поставки ПО: CI/CD pipeline
+- [ ] Паттерн [Builder](https://blog.alexellis.io/mutli-stage-docker-builds/), ["multi-stage build"](https://docs.docker.com/develop/develop-images/multistage-build/) для конвейера разработки и поставки ПО: CI/CD pipeline
 - в том числе, чтобы в итоговый образ не утекли чувствительные данные
 
 Hands-on practice quest #09: build-optimized networked multi-component stateful application resource-limited _best practice based_ containerization (10+5)
@@ -1028,9 +1021,8 @@ docker logs
 
 - Сценарий "Как осуществить multi-stage сборку образа?"
 ```shell
-cd application/backend
-wget --user --ask-password {{ app-src }}
-nano Dockerfile #TODO: BUILD stage with `mvn clean verify` and QA stage with `java -jar ... --spring.profiles.active=qa` 
+wget --user --ask-password --directory-prefix=backend/ {{ app-src }}
+nano backend/Dockerfile #TODO: BUILD stage with `mvn clean verify` and QA stage with `java -jar ... --spring.profiles.active=qa` 
 ```
 
 - [ ] Then участники делятся проблемами и отвечают на вопросы
