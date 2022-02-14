@@ -9,12 +9,12 @@ Prerequisites
 - [ ] Права локального админа для аккаунта участника {{ account }}
 - [ ] Доступен git repo с данным руководством {{ git-repo }} `gitlabci.raiffeisen.ru/container-trainings/training-docker`
 - [ ] Доступен корпоративный Docker {{ registry-host }} `artifactory.raiffeisen.ru`
-- [ ] Доступен корпоративный Docker {{ soft-registry }} с образами прикладного ПО `{{ registry-host }}/ext-rbru-techimage-docker`
-- [ ] Доступен корпоративный Docker {{ os-registry }} с образами ОС `{{ registry-host }}/ext-rbru-osimage-docker`
-- [ ] Доступен корпоративный Docker {{ project-registry }} учебного проекта `{{ registry-host }}/container-training-docker`
-- [ ] Доступен дистрибутив рабочего приложения {{ app-distr }} `{{ registry-host }}/artifactory/container-training-docker/dbo-1.0-SNAPSHOT.jar`
-- [ ] Доступен исходный проект рабочего приложения {{ app-src }} `{{ registry-host }}/artifactory/container-training-docker/dbo-1.0-SNAPSHOT-sources.jar`
-- [ ] Доступен необходимый компонент рабочего приложения {{ app-stub }} `{{ registry-host }}/artifactory/repo1-cache/com/github/tomakehurst/wiremock-standalone/2.27.2/wiremock-standalone-2.27.2.jar`
+- [ ] Доступен корпоративный Docker {{ soft-registry }} с образами прикладного ПО `artifactory.raiffeisen.ru/ext-rbru-techimage-docker`
+- [ ] Доступен корпоративный Docker {{ os-registry }} с образами ОС `artifactory.raiffeisen.ru/ext-rbru-osimage-docker`
+- [ ] Доступен корпоративный Docker {{ project-registry }} учебного проекта `artifactory.raiffeisen.ru/container-training-docker`
+- [ ] Доступен дистрибутив рабочего приложения {{ app-distr }} `artifactory.raiffeisen.ru/artifactory/container-training-docker/dbo-1.0-SNAPSHOT.jar`
+- [ ] Доступен исходный проект рабочего приложения {{ app-src }} `artifactory.raiffeisen.ru/artifactory/container-training-docker/dbo-1.0-SNAPSHOT-sources.jar`
+- [ ] Доступен необходимый компонент рабочего приложения {{ app-stub }} `artifactory.raiffeisen.ru/artifactory/repo1-cache/com/github/tomakehurst/wiremock-standalone/2.27.2/wiremock-standalone-2.27.2.jar`
 - [ ] Установлен DockerCE или совместимый менеджер контейнеров (e.g. Podman)
 ```shell
 sudo dnf install -y docker
@@ -119,34 +119,34 @@ Hands-on practice quest #00: prerequisites sound-check (15+5)
 ``` 
 
 - [ ] When участники *именуют сценарии*, выполняют команды и анализируют их вывод и поведение
-- Сценарий "Как ...?"
+- Сценарий "Как проверить версию, системную информацию о хосте и список имеджей, образов контейнеров и разделов?"
 ```shell
 docker version # TODO: собственные пометки участников для будущего использования в проектах
 docker system info
 docker system df
 ```
 
-- Сценарий "Как ...?"
+- Сценарий "Как подключиться к корпоративному репозиторию образов?"
 ```shell
 docker logout
-docker login {{ registry-host }}
+docker login artifactory.raiffeisen.ru
 ```
 
-- Сценарий "Как ...?"
+- Сценарий "Как скопировать к себе на хост образ alpint:3.14?
 ```shell
-docker image pull {{ os-registry }}/alpine:3.14
+docker image pull artifactory.raiffeisen.ru/ext-rbru-osimage-docker/alpine:3.14
 docker system df
 ````
 
-- Сценарий "Как ...?"
+- Сценарий "Как просмотреть список всех контейнеров и запустить образ alpinr:3.14 в контейнере demo?"
 ```shell
 docker container ls [--all]
-docker container run --name demo -it {{ os-registry }}/alpine:3.14
+docker container run --name demo -it artifactory.raiffeisen.ru/ext-rbru-osimage-docker/alpine:3.14
 /# cat /etc/os-release
 /# exit 
 ```
 
-- Сценарий "Как ...?"
+- Сценарий "Как просмотреть список контейнеров и удалить контейнер demo?"
 ```shell
 docker container ls [--all]
 docker container rm [--force] demo
